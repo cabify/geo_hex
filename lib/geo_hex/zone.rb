@@ -36,6 +36,29 @@ module GeoHex
       meridian_180? ? 180.0 : point.lon
     end
 
+    def hex_coords
+      h_lat = lat
+      h_lon = lon
+
+      h_deg = Math.tan(Math::PI * (60.0 / 180))
+      h_top = PP.new(@easting, @northing + h_deg * @unit.size).lat
+      h_btm = PP.new(@easting, @northing - h_deg * @unit.size).lat
+
+      h_l = PP.new(@easting - 2 * @unit.size, @northing).lon
+      h_r = PP.new(@easting + 2 * @unit.size, @northing).lon
+      h_cl = PP.new(@easting - 1 * @unit.size, @northing).lon
+      h_cr = PP.new(@easting + 1 * @unit.size, @northing).lon
+
+      return [
+          [ h_lat, h_l],
+          [ h_top, h_cl],
+          [ h_top, h_cr],
+          [ h_lat, h_r],
+          [ h_btm, h_cr],
+          [ h_btm, h_cl]
+      ]
+    end
+
     # @return [Float] the latitude coordinate
     def lat
       point.lat
@@ -120,7 +143,6 @@ module GeoHex
       end
 
     private
-
       # @return [String] GeoHex code
       def encode
         code, mod_x, mod_y = "", self.x, self.y

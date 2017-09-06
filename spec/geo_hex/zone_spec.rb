@@ -24,6 +24,22 @@ describe GeoHex::Zone do
     subject.neighbours(3).size.should eq(36)
   end
 
+  it 'should return hex coords' do
+    PRECISION = 10**-10
+    vertices = subject.hex_coords
+    vertices.size.should eq(6)
+    expected_vertices = [[51.50061326086033, -0.1615607376924251],
+                         [51.50389987445962, -0.15851242188690765],
+                         [51.50389987445962, -0.1524157902758727],
+                         [51.50061326086033, -0.14936747447035528],
+                         [51.497326410227195, -0.1524157902758727],
+                         [51.497326410227195, -0.15851242188690765]]
+    expected_vertices.zip(vertices).each do |expected, got|
+      expected[0].should be_within(PRECISION).of(got[0])
+      expected[1].should be_within(PRECISION).of(got[1])
+    end
+  end
+
   it "should find the 'right' neighbours" do
     neighbours = GeoHex.decode("PF3246648").neighbours
     neighbours.map(&:to_s).should =~ %w(PF3246645 PF3246672 PF3246656 PF3246644 PF3246680 PF3246647)
